@@ -9,16 +9,22 @@ import java.util.logging.Logger;
 
 import jakarta.websocket.*;
 import jakarta.websocket.server.ServerEndpoint;
+import org.apache.maven.archetypes.maven_archetype_quickstart.redis.BBApplicationContextAware;
+import org.apache.maven.archetypes.maven_archetype_quickstart.repositories.TicketRepository;
 import org.springframework.stereotype.Component;
 @Component
 @ServerEndpoint("/bbService")
 
 public class BBEndpoint {
-    private static final Logger logger =
-            Logger.getLogger(BBEndpoint.class.getName());
+    private boolean accepted = false;
+    private static final Logger logger = Logger.getLogger(BBEndpoint.class.getName());
     /* Queue for all open WebSocket sessions */
     static Queue<Session> queue = new ConcurrentLinkedQueue<>();
-    Session ownSession = null;
+    private Session ownSession = null;
+    TicketRepository ticketRepo =
+            (TicketRepository)
+                    BBApplicationContextAware.getApplicationContext().getBean("ticketRepository");
+
     /* Call this method to send a message to all clients */
     public void send(String msg) {
         try {
@@ -36,8 +42,19 @@ public class BBEndpoint {
     }
     @OnMessage
     public void processPoint(String message, Session session) {
-        System.out.println("Point received:" + message + ". From session: " + session);
-        this.send(message);
+        if (accepted) {
+            this.send(message);
+        } else {
+            if (!accepted && ticketRepo.checkTicket(message)) {
+                accepted = true;
+            }else{
+                try {
+                    ownSession.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(BBEndpoint.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
     @OnOpen
     public void openConnection(Session session) {
@@ -64,5 +81,10 @@ public class BBEndpoint {
         logger.log(Level.INFO, t.toString());
         logger.log(Level.INFO, "Connection error.");
     }
+
+
+
+
+
 }
 
