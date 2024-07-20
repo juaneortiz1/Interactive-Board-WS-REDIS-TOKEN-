@@ -38,9 +38,7 @@ The architecture of the application involves two main components:
     - Establishes a WebSocket connection to the backend server for real-time updates.
     - Differentiates between local and remote drawing actions to maintain a consistent and responsive user experience.
 
-### Architecture Diagram
-
-![Diagrama en blanco](https://github.com/juaneortiz1/InteractiveBoardWS/assets/97971732/bdc5bcc4-abc7-4936-9c42-2a48be5cc1e3)
+### Architecture 
 
 This project leverages ReactJS on the client-side and Spring.io on the server-side to create a real-time collaborative drawing application. Clients interact through a dynamic user interface powered by ReactJS, while P5.js manages the interactive drawing canvas. Spring.io manages WebSocket connections, facilitating seamless bidirectional communication between clients and enabling real-time updates of drawings. Redis is used to persist session data, ensuring the application remains stateless and scalable. AWS provides scalable hosting and storage solutions, ensuring the application remains responsive and reliable even with multiple simultaneous users. Together, these technologies form a robust architecture that allows users to collaboratively draw, with distinct visualization of their own and others' contributions, enhancing the interactive and collaborative experience.
 
